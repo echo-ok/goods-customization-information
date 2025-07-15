@@ -21,13 +21,14 @@ type Text struct {
 }
 
 type Image struct {
+	Region null.String `json:"region"`   // 区域
 	RawUrl string      `json:"raw_url"`  // 图片原始地址
-	Name   null.String `json:"name"`     // 图片名称
-	Ext    null.String `json:"ext"`      // 图片扩展名
-	Title  null.String `json:"title"`    // 图片标题
 	Url    null.String `json:"download"` // 可访问地址
+	Name   null.String `json:"name"`     // 图片名称
+	Title  null.String `json:"title"`    // 图片标题
+	Ext    null.String `json:"ext"`      // 图片扩展名
 	Bytes  []byte      `json:"bytes"`    // 图片字节
-	Base64 null.String `json:"base64"`   // 图片 Base64
+	Base64 null.String `json:"base64"`   // 图片 Base64 内容
 	Ok     bool        `json:"ok"`       // 是否可用
 	Error  error       `json:"error"`    // 错误信息
 }
@@ -58,8 +59,16 @@ func (img Image) SaveTo(filename string) (string, error) {
 	return fer.SaveTo(filename)
 }
 
+// Surface 面
 type Surface struct {
-	ID           null.String `json:"id"`            // ID
+	Name         null.String `json:"name"`          // 面名称
+	PreviewImage null.String `json:"preview_image"` // 面预览图
+	Regions      []Region    `json:"regions"`       // 区域内容
+}
+
+// Region 区域
+type Region struct {
+	Name         null.String `json:"name"`          // 区域名称
 	Type         string      `json:"type"`          // 类型
 	PreviewImage null.String `json:"preview_image"` // 预览图
 	Texts        []Text      `json:"texts"`         // 定制文本
@@ -68,7 +77,7 @@ type Surface struct {
 	Error        error       `json:"error"`         // 错误信息
 }
 
-func (sf *Surface) typecast() *Surface {
+func (sf *Region) typecast() *Region {
 	var tn, in = len(sf.Texts), len(sf.Images)
 	if tn == 0 && in == 0 {
 		sf.Type = UnknownType
@@ -82,13 +91,13 @@ func (sf *Surface) typecast() *Surface {
 	return sf
 }
 
-func (sf *Surface) AddText(text Text) *Surface {
+func (sf *Region) AddText(text Text) *Region {
 	sf.Texts = append(sf.Texts, text)
 	sf.typecast()
 	return sf
 }
 
-func (sf *Surface) AddImage(image Image) *Surface {
+func (sf *Region) AddImage(image Image) *Region {
 	sf.Images = append(sf.Images, image)
 	sf.typecast()
 	return sf
