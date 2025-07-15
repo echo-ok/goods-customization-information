@@ -7,12 +7,18 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+type Type string
+
 const (
-	UnknownType = "unknown"   // 未知
-	TextType    = "text"      // 仅文字
-	ImageType   = "image"     // 仅图片
-	TextImage   = "textImage" // 文字和图片
+	UnknownType   Type = "unknown"   // 未知
+	TextType      Type = "text"      // 仅文字
+	ImageType     Type = "image"     // 仅图片
+	TextImageType Type = "textImage" // 文字和图片
 )
+
+func (t Type) IsValid() bool {
+	return t == TextType || t == ImageType || t == TextImageType || t == UnknownType
+}
 
 type Text struct {
 	Region null.String `json:"region"` // 区域
@@ -66,10 +72,15 @@ type Surface struct {
 	Regions      []Region    `json:"regions"`       // 区域内容
 }
 
+func (sf *Surface) AddRegion(region Region) *Surface {
+	sf.Regions = append(sf.Regions, region)
+	return sf
+}
+
 // Region 区域
 type Region struct {
 	Name         null.String `json:"name"`          // 区域名称
-	Type         string      `json:"type"`          // 类型
+	Type         Type        `json:"type"`          // 类型
 	PreviewImage null.String `json:"preview_image"` // 预览图
 	Texts        []Text      `json:"texts"`         // 定制文本
 	Images       []Image     `json:"images"`        // 定制图片
@@ -82,7 +93,7 @@ func (sf *Region) typecast() *Region {
 	if tn == 0 && in == 0 {
 		sf.Type = UnknownType
 	} else if tn != 0 && in != 0 {
-		sf.Type = TextImage
+		sf.Type = TextImageType
 	} else if tn == 0 {
 		sf.Type = ImageType
 	} else {
@@ -106,4 +117,24 @@ func (sf *Region) AddImage(image Image) *Region {
 type GoodsCustomizedInformation struct {
 	RawData  null.String `json:"raw_data"` // 原始数据
 	Surfaces []Surface   `json:"surfaces"` // 面
+}
+
+func NewGoodsCustomizedInformation() *GoodsCustomizedInformation {
+	return &GoodsCustomizedInformation{
+		Surfaces: make([]Surface, 0),
+	}
+}
+
+func (gci *GoodsCustomizedInformation) AddRawData(data string) *GoodsCustomizedInformation {
+	if data == "" {
+		gci.RawData = null.String{}
+	} else {
+		gci.RawData = null.StringFrom(data)
+	}
+	return gci
+}
+
+func (gci *GoodsCustomizedInformation) AddSurface(surface Surface) *GoodsCustomizedInformation {
+	gci.Surfaces = append(gci.Surfaces, surface)
+	return gci
 }
