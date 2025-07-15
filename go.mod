@@ -1,9 +1,9 @@
-module github.com/echo-ok/goods-customized-information
+module github.com/echo-ok/goods-customization-information
 
 go 1.23.9
 
 require (
-	github.com/hiscaler/filer-go v0.0.0-20250715013612-34a500ff51bd
+	github.com/hiscaler/filer-go v0.0.0-20250715025717-8faeae8a64d6
 	gopkg.in/guregu/null.v4 v4.0.0
 )
 
