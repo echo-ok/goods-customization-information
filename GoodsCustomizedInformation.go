@@ -1,6 +1,11 @@
 package gci
 
-import "gopkg.in/guregu/null.v4"
+import (
+	"errors"
+
+	"github.com/hiscaler/filer-go"
+	"gopkg.in/guregu/null.v4"
+)
 
 const (
 	UnknownType = "unknown"   // 未知
@@ -12,31 +17,55 @@ const (
 type Text struct {
 	Region null.String `json:"region"` // 区域
 	Label  string      `json:"label"`  // 标签
-	Value  string      `json:"value"`  // 值
+	Value  any         `json:"value"`  // 值
 }
 
 type Image struct {
 	RawUrl string      `json:"raw_url"`  // 图片原始地址
 	Name   null.String `json:"name"`     // 图片名称
+	Ext    null.String `json:"ext"`      // 图片扩展名
+	Title  null.String `json:"title"`    // 图片标题
 	Url    null.String `json:"download"` // 可访问地址
+	Bytes  []byte      `json:"bytes"`    // 图片字节
+	Base64 null.String `json:"base64"`   // 图片 Base64
+	Ok     bool        `json:"ok"`       // 是否可用
 	Error  error       `json:"error"`    // 错误信息
-	Ok     bool        `json:"ok"`       // 是否可下载
 }
 
-// Download 图片下载
-func (img Image) Download(filename string) error {
+// SaveTo 图片保存
+func (img Image) SaveTo(filename string) (string, error) {
 	if !img.Url.Valid {
-		return img.Error
+		return "", img.Error
 	}
-	return nil
+
+	if !img.Url.Valid && len(img.Bytes) == 0 && !img.Base64.Valid {
+		return "", errors.New("gci: image.url|bytes|base64 value is empty")
+	}
+
+	var file any
+	fer := filer.NewFiler()
+	if len(img.Bytes) != 0 {
+		file = img.Bytes
+	} else if img.Base64.Valid {
+		file = img.Base64.String
+	} else if img.Url.Valid {
+		file = img.Url.String
+	}
+	err := fer.Open(file)
+	if err != nil {
+		return "", err
+	}
+	return fer.SaveTo(filename)
 }
 
 type Surface struct {
 	ID           null.String `json:"id"`            // ID
 	Type         string      `json:"type"`          // 类型
 	PreviewImage null.String `json:"preview_image"` // 预览图
+	Texts        []Text      `json:"texts"`         // 定制文本
 	Images       []Image     `json:"images"`        // 定制图片
-	Texts        []Text      `json:"texts"`         // 定制内容
+	Ok           bool        `json:"ok"`            // 是否可用
+	Error        error       `json:"error"`         // 错误信息
 }
 
 func (sf *Surface) typecast() *Surface {
