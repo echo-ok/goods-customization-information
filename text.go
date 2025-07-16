@@ -1,11 +1,20 @@
 package gci
 
+import (
+	"errors"
+	"strings"
+)
+
 // Text 定制文本
 type Text struct {
 	Label string `json:"label"` // 标签
-	Value any    `json:"value"` // 值
+	Value string `json:"value"` // 值
 }
 
-func NewText(label string, value any) Text {
-	return Text{label, value}
+func NewText(label, value string) (Text, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return Text{}, errors.New("gci: text value is empty")
+	}
+	return Text{strings.TrimSpace(label), value}, nil
 }

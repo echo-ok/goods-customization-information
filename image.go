@@ -2,6 +2,7 @@ package gci
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/hiscaler/filer-go"
 	"gopkg.in/guregu/null.v4"
@@ -9,15 +10,21 @@ import (
 
 // Image 定制图片
 type Image struct {
-	redownload  bool   // 是否重新下载
-	OriginalUrl string `json:"original_url"` // 图片原始地址
-	FInfo       FInfo  `json:"finfo"`        // 文件信息
+	redownload bool        // 是否重新下载
+	RawUrl     string      `json:"raw_url"` // 图片原始地址
+	Url        null.String `json:"url"`     // 图片地址
+	Valid      bool        `json:"valid"`   // 是否有效
+	Error      null.String `json:"error"`   // 错误信息
 }
 
-func NewImage(url string, redownload bool) Image {
-	img := Image{redownload: false, OriginalUrl: url, FInfo: FInfo{}}
+func NewImage(url string, redownload bool) (Image, error) {
+	url = strings.TrimSpace(url)
+	if url == "" {
+		return Image{}, errors.New("gci: url is empty")
+	}
+	img := Image{redownload: false, RawUrl: url}
 	img.SetRedownload(redownload)
-	return img
+	return img, nil
 }
 
 func (img *Image) SetRedownload(b bool) *Image {
@@ -25,9 +32,9 @@ func (img *Image) SetRedownload(b bool) *Image {
 		return img
 	}
 	img.redownload = b
-	if b {
-		img.FInfo.Url = null.StringFrom(img.OriginalUrl)
-		img.FInfo.Valid = true
+	if !b {
+		img.Url = null.StringFrom(img.RawUrl)
+		img.Valid = true
 	}
 	return img
 }
@@ -36,29 +43,38 @@ func (img *Image) Redownload() bool {
 	return img.redownload
 }
 
+func (img *Image) SetUrl(url string) *Image {
+	img.Url = null.StringFrom(url)
+	img.SetError(nil)
+	return img
+}
+
+func (img *Image) SetError(msg any) *Image {
+	str := toString(msg)
+	if str == "" {
+		img.Error = null.NewString("", false)
+	} else {
+		img.Error = null.StringFrom(str)
+	}
+	img.Valid = !img.Error.Valid
+	return img
+}
+
 // SaveTo Save image to local
 func (img *Image) SaveTo(filename string) (string, error) {
 	if img == nil {
 		return "", errors.New("gci: image is nil")
 	}
-	if !img.FInfo.Url.Valid {
-		return "", img.FInfo.Error
+	if !img.Url.Valid {
+		return "", errors.New(img.Error.ValueOrZero())
 	}
 
-	if !img.FInfo.Url.Valid && len(img.FInfo.Bytes) == 0 && !img.FInfo.Base64.Valid {
-		return "", errors.New("gci: image.url|bytes|base64 value is empty")
+	if !img.Url.Valid {
+		return "", errors.New("gci: image.url is empty")
 	}
 
-	var file any
 	fer := filer.NewFiler()
-	if len(img.FInfo.Bytes) != 0 {
-		file = img.FInfo.Bytes
-	} else if img.FInfo.Base64.Valid {
-		file = img.FInfo.Base64.String
-	} else if img.FInfo.Url.Valid {
-		file = img.FInfo.Url.String
-	}
-	err := fer.Open(file)
+	err := fer.Open(img.Url.String)
 	if err != nil {
 		return "", err
 	}

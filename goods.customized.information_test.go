@@ -30,11 +30,37 @@ func Test_Surface(t *testing.T) {
 	ci := NewGoodsCustomizedInformation()
 	surface := NewSurface()
 	assert.Equal(t, true, surface.PreviewImage == nil, "surface preview image default equal nil")
-	img := NewImage("https://www.a.com/b.jpg", true)
-	img.OriginalUrl = "https://www.a.com/b.jpg"
+	img, err := NewImage("https://www.a.com/b.jpg", true)
+	assert.Equal(t, nil, err)
+	img.RawUrl = "https://www.a.com/b.jpg"
 	surface.PreviewImage = &img
 	ci.AddSurface(surface)
 	assert.Equal(t, 1, len(ci.Surfaces))
-	assert.Equal(t, "https://www.a.com/b.jpg", surface.PreviewImage.OriginalUrl)
+	assert.Equal(t, "https://www.a.com/b.jpg", surface.PreviewImage.RawUrl)
 	assert.Equal(t, true, surface.PreviewImage.Redownload())
+
+	img.SetError("xxx")
+	assert.Equal(t, "xxx", surface.PreviewImage.Error.ValueOrZero())
+	assert.Equal(t, false, surface.PreviewImage.Valid)
+
+	img.SetError(nil)
+	assert.Equal(t, "", surface.PreviewImage.Error.ValueOrZero())
+	assert.Equal(t, true, surface.PreviewImage.Valid)
+
+	region := NewRegion("a")
+	assert.Equal(t, "a", region.Name.ValueOrZero())
+
+	text, err := NewText("", "")
+	assert.Equal(t, true, err != nil)
+
+	text, err = NewText("", "bbb")
+	assert.Equal(t, nil, err)
+	region.AddText(text)
+	assert.Equal(t, 1, len(region.Texts))
+	surface.AddRegion(region)
+	assert.Equal(t, 1, len(surface.Regions))
+	ci.AddSurface(surface)
+	assert.Equal(t, 2, len(ci.Surfaces))
+	assert.Equal(t, 1, len(ci.Surfaces[1].Regions[0].Texts))
+	assert.Equal(t, "bbb", ci.Surfaces[1].Regions[0].Texts[0].Value)
 }

@@ -39,6 +39,8 @@ func toString(value any) string {
 		return string(val)
 	case string:
 		return val
+	case nil:
+		return ""
 	}
 	v := reflect.ValueOf(value)
 	switch v.Kind() {
