@@ -1,6 +1,8 @@
 package gci
 
-import "gopkg.in/guregu/null.v4"
+import (
+	"gopkg.in/guregu/null.v4"
+)
 
 // Region 区域
 type Region struct {
@@ -8,12 +10,17 @@ type Region struct {
 	Type   Type        `json:"type"`   // 类型
 	Texts  []Text      `json:"texts"`  // 定制文本
 	Images []Image     `json:"images"` // 定制图片
-	Ok     bool        `json:"ok"`     // 是否可用
-	Error  error       `json:"error"`  // 错误信息
+	Valid  bool        `json:"valid"`  // 是否有效
+	Error  null.String `json:"error"`  // 错误信息
 }
 
-func NewRegion(name ...string) Region {
-	r := Region{}
+func NewRegion(typ Type, name ...string) Region {
+	r := Region{
+		Type:   typ,
+		Valid:  true,
+		Texts:  make([]Text, 0),
+		Images: make([]Image, 0),
+	}
 	if len(name) != 0 {
 		if name[0] != "" {
 			r.Name = null.StringFrom(name[0])
@@ -45,5 +52,16 @@ func (r *Region) AddText(text Text) *Region {
 func (r *Region) AddImage(image Image) *Region {
 	r.Images = append(r.Images, image)
 	r.typecast()
+	return r
+}
+
+func (r *Region) SetError(msg any) *Region {
+	str := toString(msg)
+	if str == "" {
+		r.Error = null.NewString("", false)
+	} else {
+		r.Error = null.StringFrom(str)
+	}
+	r.Valid = !r.Error.Valid
 	return r
 }

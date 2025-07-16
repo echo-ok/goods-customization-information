@@ -28,16 +28,19 @@ func Test_SetRawData(t *testing.T) {
 
 func Test_Surface(t *testing.T) {
 	ci := NewGoodsCustomizedInformation()
+	ci.SetRawData(`[{"name": "Joke", "age": 12}]`)
 	surface := NewSurface()
 	assert.Equal(t, true, surface.PreviewImage == nil, "surface preview image default equal nil")
 	img, err := NewImage("https://www.a.com/b.jpg", true)
 	assert.Equal(t, nil, err)
-	img.RawUrl = "https://www.a.com/b.jpg"
-	surface.PreviewImage = &img
+	surface.SetPreviewImage(&img)
 	ci.AddSurface(surface)
 	assert.Equal(t, 1, len(ci.Surfaces))
 	assert.Equal(t, "https://www.a.com/b.jpg", surface.PreviewImage.RawUrl)
 	assert.Equal(t, true, surface.PreviewImage.Redownload())
+	img.SetRedownload(false)
+	assert.Equal(t, false, surface.PreviewImage.Redownload())
+	assert.Equal(t, "https://www.a.com/b.jpg", surface.PreviewImage.Url.String)
 
 	img.SetError("xxx")
 	assert.Equal(t, "xxx", surface.PreviewImage.Error.ValueOrZero())
@@ -47,7 +50,7 @@ func Test_Surface(t *testing.T) {
 	assert.Equal(t, "", surface.PreviewImage.Error.ValueOrZero())
 	assert.Equal(t, true, surface.PreviewImage.Valid)
 
-	region := NewRegion("a")
+	region := NewRegion(TextType, "a")
 	assert.Equal(t, "a", region.Name.ValueOrZero())
 
 	text, err := NewText("", "")

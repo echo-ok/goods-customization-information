@@ -11,6 +11,7 @@ import (
 // Image 定制图片
 type Image struct {
 	redownload bool        // 是否重新下载
+	Label      null.String `json:"label"`   // 标签
 	RawUrl     string      `json:"raw_url"` // 图片原始地址
 	Url        null.String `json:"url"`     // 图片地址
 	Valid      bool        `json:"valid"`   // 是否有效
