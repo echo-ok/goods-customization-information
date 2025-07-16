@@ -7,6 +7,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+// Image 定制图片
 type Image struct {
 	redownload  bool   // 是否重新下载
 	OriginalUrl string `json:"original_url"` // 图片原始地址
@@ -33,11 +34,6 @@ func (img *Image) SetRedownload(b bool) *Image {
 
 func (img *Image) Redownload() bool {
 	return img.redownload
-}
-
-type RegionImage struct {
-	Region null.String `json:"region"` // 区域
-	Image
 }
 
 // SaveTo Save image to local

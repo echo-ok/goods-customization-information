@@ -1,7 +1,6 @@
 package gci
 
-import "gopkg.in/guregu/null.v4"
-
+// Text 定制文本
 type Text struct {
 	Label string `json:"label"` // 标签
 	Value any    `json:"value"` // 值
@@ -9,9 +8,4 @@ type Text struct {
 
 func NewText(label string, value any) Text {
 	return Text{label, value}
-}
-
-type RegionText struct {
-	Region null.String `json:"region"` // 区域
-	Text
 }
