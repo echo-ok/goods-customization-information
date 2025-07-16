@@ -27,36 +27,29 @@ type Text struct {
 }
 
 type Image struct {
-	Region null.String `json:"region"`   // 区域
-	RawUrl string      `json:"raw_url"`  // 图片原始地址
-	Url    null.String `json:"download"` // 可访问地址
-	Name   null.String `json:"name"`     // 图片名称
-	Title  null.String `json:"title"`    // 图片标题
-	Ext    null.String `json:"ext"`      // 图片扩展名
-	Bytes  []byte      `json:"bytes"`    // 图片字节
-	Base64 null.String `json:"base64"`   // 图片 Base64 内容
-	Ok     bool        `json:"ok"`       // 是否可用
-	Error  error       `json:"error"`    // 错误信息
+	Region null.String `json:"region"`  // 区域
+	RawUrl string      `json:"raw_url"` // 图片原始地址
+	FInfo  FInfo       `json:"finfo"`   // 文件信息
 }
 
 // SaveTo 图片保存
 func (img Image) SaveTo(filename string) (string, error) {
-	if !img.Url.Valid {
-		return "", img.Error
+	if !img.FInfo.Url.Valid {
+		return "", img.FInfo.Error
 	}
 
-	if !img.Url.Valid && len(img.Bytes) == 0 && !img.Base64.Valid {
+	if !img.FInfo.Url.Valid && len(img.FInfo.Bytes) == 0 && !img.FInfo.Base64.Valid {
 		return "", errors.New("gci: image.url|bytes|base64 value is empty")
 	}
 
 	var file any
 	fer := filer.NewFiler()
-	if len(img.Bytes) != 0 {
-		file = img.Bytes
-	} else if img.Base64.Valid {
-		file = img.Base64.String
-	} else if img.Url.Valid {
-		file = img.Url.String
+	if len(img.FInfo.Bytes) != 0 {
+		file = img.FInfo.Bytes
+	} else if img.FInfo.Base64.Valid {
+		file = img.FInfo.Base64.String
+	} else if img.FInfo.Url.Valid {
+		file = img.FInfo.Url.String
 	}
 	err := fer.Open(file)
 	if err != nil {
@@ -67,8 +60,8 @@ func (img Image) SaveTo(filename string) (string, error) {
 
 // Surface 面
 type Surface struct {
-	Name         null.String `json:"name"`          // 面名称
-	PreviewImage null.String `json:"preview_image"` // 面预览图
+	Name         null.String `json:"name"`          // 名称
+	PreviewImage null.String `json:"preview_image"` // 预览图
 	Regions      []Region    `json:"regions"`       // 区域内容
 }
 
