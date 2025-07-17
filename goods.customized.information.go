@@ -1,11 +1,11 @@
 package gci
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
 
+	"github.com/goccy/go-json"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -24,7 +24,7 @@ func (t Type) IsValid() bool {
 
 type GoodsCustomizedInformation struct {
 	RawData  null.String `json:"raw_data"` // 原始数据
-	Surfaces []Surface   `json:"surfaces"` // 面
+	Surfaces []Surface   `json:"surfaces"` // 定制面
 }
 
 func NewGoodsCustomizedInformation() GoodsCustomizedInformation {

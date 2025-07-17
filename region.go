@@ -4,7 +4,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-// Region 区域
+// Region 定制区域
 type Region struct {
 	Name   null.String `json:"name"`   // 区域名称
 	Type   Type        `json:"type"`   // 类型

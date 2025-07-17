@@ -2,11 +2,11 @@ package gci
 
 import "gopkg.in/guregu/null.v4"
 
-// Surface 面
+// Surface 定制面
 type Surface struct {
 	Name         null.String `json:"name"`          // 名称
 	PreviewImage *Image      `json:"preview_image"` // 预览图
-	Regions      []Region    `json:"regions"`       // 区域内容
+	Regions      []Region    `json:"regions"`       // 定制区域
 }
 
 func NewSurface(name ...string) Surface {

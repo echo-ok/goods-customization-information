@@ -66,4 +66,5 @@ func Test_Surface(t *testing.T) {
 	assert.Equal(t, 2, len(ci.Surfaces))
 	assert.Equal(t, 1, len(ci.Surfaces[1].Regions[0].Texts))
 	assert.Equal(t, "bbb", ci.Surfaces[1].Regions[0].Texts[0].Value)
+	t.Logf("Goods Customized Information JSON = %s", ci.String())
 }
