@@ -14,17 +14,15 @@ type Region struct {
 	Error  null.String `json:"error"`  // 错误信息
 }
 
-func NewRegion(typ Type, name ...string) Region {
+func NewRegion(name ...string) Region {
 	r := Region{
-		Type:   typ,
-		Valid:  true,
+		Type:   UnknownType,
+		Valid:  false,
 		Texts:  make([]Text, 0),
 		Images: make([]Image, 0),
 	}
-	if len(name) != 0 {
-		if name[0] != "" {
-			r.Name = null.StringFrom(name[0])
-		}
+	if len(name) != 0 && name[0] != "" {
+		r.Name = null.StringFrom(name[0])
 	}
 	return r
 }
@@ -40,6 +38,7 @@ func (r *Region) typecast() *Region {
 	} else {
 		r.Type = TextType
 	}
+	r.Valid = !r.Error.Valid
 	return r
 }
 

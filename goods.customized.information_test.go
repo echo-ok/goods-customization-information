@@ -50,7 +50,7 @@ func Test_Surface(t *testing.T) {
 	assert.Equal(t, "", surface.PreviewImage.Error.ValueOrZero())
 	assert.Equal(t, true, surface.PreviewImage.Valid)
 
-	region := NewRegion(TextType, "a")
+	region := NewRegion("a")
 	assert.Equal(t, "a", region.Name.ValueOrZero())
 
 	text, err := NewText("", "")
