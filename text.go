@@ -1,7 +1,6 @@
 package gci
 
 import (
-	"errors"
 	"strings"
 )
 
@@ -12,9 +11,8 @@ type Text struct {
 }
 
 func NewText(label, value string) (Text, error) {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return Text{}, errors.New("gci: text value is empty")
-	}
-	return Text{strings.TrimSpace(label), value}, nil
+	return Text{
+		Label: strings.TrimSpace(label),
+		Value: strings.TrimSpace(value),
+	}, nil
 }
