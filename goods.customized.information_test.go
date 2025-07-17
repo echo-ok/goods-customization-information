@@ -54,17 +54,25 @@ func Test_Surface(t *testing.T) {
 	assert.Equal(t, "a", region.Name.ValueOrZero())
 
 	text, err := NewText("", "")
-	assert.Equal(t, true, err != nil)
+	assert.Equal(t, true, err == nil)
 
 	text, err = NewText("", "bbb")
 	assert.Equal(t, nil, err)
 	region.AddText(text)
 	assert.Equal(t, 1, len(region.Texts))
+
+	text, err = NewText("", []int{1, 2, 3})
+	assert.Equal(t, nil, err)
+	region.AddText(text)
+	assert.Equal(t, 2, len(region.Texts))
+
 	surface.AddRegion(region)
 	assert.Equal(t, 1, len(surface.Regions))
 	ci.AddSurface(surface)
 	assert.Equal(t, 2, len(ci.Surfaces))
-	assert.Equal(t, 1, len(ci.Surfaces[1].Regions[0].Texts))
+	assert.Equal(t, 2, len(ci.Surfaces[1].Regions[0].Texts))
 	assert.Equal(t, "bbb", ci.Surfaces[1].Regions[0].Texts[0].Value)
+	assert.Equal(t, []int{1, 2, 3}, ci.Surfaces[1].Regions[0].Texts[1].Value)
+
 	t.Logf("Goods Customized Information JSON = %s", ci.String())
 }

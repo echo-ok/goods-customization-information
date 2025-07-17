@@ -4,15 +4,20 @@ import (
 	"strings"
 )
 
+// ValueType 值类型
+type ValueType interface {
+	~string | ~int | ~int64 | ~float64 | ~[]string | ~[]int | ~[]int64 | ~[]float64
+}
+
 // Text 定制文本
 type Text struct {
 	Label string `json:"label"` // 标签
-	Value string `json:"value"` // 值
+	Value any    `json:"value"` // 值
 }
 
-func NewText(label, value string) (Text, error) {
+func NewText[T ValueType](label string, value T) (Text, error) {
 	return Text{
 		Label: strings.TrimSpace(label),
-		Value: strings.TrimSpace(value),
+		Value: value,
 	}, nil
 }
