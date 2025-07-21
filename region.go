@@ -54,8 +54,8 @@ func (r *Region) AddImage(image Image) *Region {
 	return r
 }
 
-func (r *Region) SetError(msg any) *Region {
-	str := toString(msg)
+func (r *Region) SetError(err any) *Region {
+	str := toString(err)
 	if str == "" {
 		r.Error = null.NewString("", false)
 	} else {
