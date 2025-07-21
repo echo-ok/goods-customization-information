@@ -37,9 +37,9 @@ func Test_Surface(t *testing.T) {
 	ci.AddSurface(surface)
 	assert.Equal(t, 1, len(ci.Surfaces))
 	assert.Equal(t, "https://www.a.com/b.jpg", surface.PreviewImage.RawUrl)
-	assert.Equal(t, true, surface.PreviewImage.Redownload())
+	assert.Equal(t, true, surface.PreviewImage.Redownload)
 	img.SetRedownload(false)
-	assert.Equal(t, false, surface.PreviewImage.Redownload())
+	assert.Equal(t, false, surface.PreviewImage.Redownload)
 	assert.Equal(t, "https://www.a.com/b.jpg", surface.PreviewImage.Url.String)
 
 	img.SetError("xxx")
