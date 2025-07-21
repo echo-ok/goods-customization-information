@@ -29,6 +29,7 @@ type GoodsCustomizedInformation struct {
 
 func NewGoodsCustomizedInformation() GoodsCustomizedInformation {
 	return GoodsCustomizedInformation{
+		RawData:  null.NewString("", false),
 		Surfaces: make([]Surface, 0),
 	}
 }
