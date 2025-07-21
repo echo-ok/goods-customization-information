@@ -75,6 +75,7 @@ func toString(value any) string {
 		return fmt.Sprintf("%v", value)
 	}
 }
+
 func (gci *GoodsCustomizedInformation) SetRawData(data any) *GoodsCustomizedInformation {
 	str := toString(data)
 	if str == "" {
