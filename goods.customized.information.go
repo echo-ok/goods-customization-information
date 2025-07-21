@@ -33,6 +33,12 @@ func NewGoodsCustomizedInformation() GoodsCustomizedInformation {
 	}
 }
 
+func (gci *GoodsCustomizedInformation) Reset() *GoodsCustomizedInformation {
+	gci.RawData = null.NewString("", false)
+	gci.Surfaces = make([]Surface, 0)
+	return gci
+}
+
 func toString(value any) string {
 	switch val := value.(type) {
 	case []byte:
