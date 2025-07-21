@@ -1,6 +1,7 @@
 package gci
 
 import (
+	"errors"
 	"strings"
 )
 
@@ -16,8 +17,19 @@ type Text struct {
 }
 
 func NewText[T ValueType](label string, value T) (Text, error) {
+	label = strings.TrimSpace(label)
+	emptyLabel := label == ""
+	emptyValue := false
+	if str, ok := any(value).(string); ok {
+		str = strings.TrimSpace(str)
+		emptyValue = str == ""
+		value = any(str).(T)
+	}
+	if emptyLabel && emptyValue {
+		return Text{}, errors.New("gci: label and value are empty")
+	}
 	return Text{
-		Label: strings.TrimSpace(label),
+		Label: label,
 		Value: value,
 	}, nil
 }

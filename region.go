@@ -1,6 +1,8 @@
 package gci
 
 import (
+	"strings"
+
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -21,8 +23,11 @@ func NewRegion(name ...string) Region {
 		Texts:  make([]Text, 0),
 		Images: make([]Image, 0),
 	}
-	if len(name) != 0 && name[0] != "" {
-		r.Name = null.StringFrom(name[0])
+	if len(name) != 0 {
+		s := strings.TrimSpace(name[0])
+		if s != "" {
+			r.Name = null.StringFrom(s)
+		}
 	}
 	return r
 }

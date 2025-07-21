@@ -53,13 +53,22 @@ func Test_Surface(t *testing.T) {
 	region := NewRegion("a")
 	assert.Equal(t, "a", region.Name.ValueOrZero())
 
-	text, err := NewText("", "")
+	text, err := NewText("", "aaa")
 	assert.Equal(t, true, err == nil)
 
-	text, err = NewText("", "bbb")
+	text, err = NewText("", " bbb ")
 	assert.Equal(t, nil, err)
 	region.AddText(text)
 	assert.Equal(t, 1, len(region.Texts))
+
+	// 空值处理
+	text, err = NewText("", "     ")
+	assert.Equal(t, true, err != nil)
+	if err == nil {
+		region.AddText(text)
+		assert.Equal(t, "", text.Value)
+		assert.Equal(t, 2, len(region.Texts))
+	}
 
 	text, err = NewText("", []int{1, 2, 3})
 	assert.Equal(t, nil, err)

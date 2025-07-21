@@ -1,6 +1,10 @@
 package gci
 
-import "gopkg.in/guregu/null.v4"
+import (
+	"strings"
+
+	"gopkg.in/guregu/null.v4"
+)
 
 // Surface 定制面
 type Surface struct {
@@ -15,8 +19,9 @@ func NewSurface(name ...string) Surface {
 		Regions:      make([]Region, 0),
 	}
 	if len(name) != 0 {
-		if name[0] != "" {
-			sf.Name = null.StringFrom(name[0])
+		s := strings.TrimSpace(name[0])
+		if s != "" {
+			sf.Name = null.StringFrom(s)
 		}
 	}
 	return sf
