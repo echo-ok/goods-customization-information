@@ -4,7 +4,6 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/hiscaler/filer-go"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -55,24 +54,4 @@ func (img *Image) SetError(msg any) *Image {
 	}
 	img.Valid = !img.Error.Valid
 	return img
-}
-
-// SaveTo Save image to local
-func (img *Image) SaveTo(filename string) (string, error) {
-	if img == nil {
-		return "", errors.New("gci: image is nil")
-	}
-	if img.Error.Valid {
-		return "", errors.New(img.Error.String)
-	}
-	if !img.Url.Valid {
-		return "", errors.New("gci: image.url is empty")
-	}
-
-	fer := filer.NewFiler()
-	err := fer.Open(img.Url.String)
-	if err != nil {
-		return "", err
-	}
-	return fer.SaveTo(filename)
 }
