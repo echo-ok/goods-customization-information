@@ -62,10 +62,9 @@ func (img *Image) SaveTo(filename string) (string, error) {
 	if img == nil {
 		return "", errors.New("gci: image is nil")
 	}
-	if !img.Url.Valid {
-		return "", errors.New(img.Error.ValueOrZero())
+	if img.Error.Valid {
+		return "", errors.New(img.Error.String)
 	}
-
 	if !img.Url.Valid {
 		return "", errors.New("gci: image.url is empty")
 	}
@@ -77,32 +76,3 @@ func (img *Image) SaveTo(filename string) (string, error) {
 	}
 	return fer.SaveTo(filename)
 }
-
-// SaveTo Save image to local
-//func (img *Image) SaveTo2(filename string) (string, error) {
-//	if img == nil {
-//		return "", errors.New("gci: image is nil")
-//	}
-//	if !img.FInfo.Url.Valid {
-//		return "", img.FInfo.Error
-//	}
-//
-//	if !img.FInfo.Url.Valid && len(img.FInfo.Bytes) == 0 && !img.FInfo.Base64.Valid {
-//		return "", errors.New("gci: image.url|bytes|base64 value is empty")
-//	}
-//
-//	var file any
-//	fer := filer.NewFiler()
-//	if len(img.FInfo.Bytes) != 0 {
-//		file = img.FInfo.Bytes
-//	} else if img.FInfo.Base64.Valid {
-//		file = img.FInfo.Base64.String
-//	} else if img.FInfo.Url.Valid {
-//		file = img.FInfo.Url.String
-//	}
-//	err := fer.Open(file)
-//	if err != nil {
-//		return "", err
-//	}
-//	return fer.SaveTo(filename)
-//}
