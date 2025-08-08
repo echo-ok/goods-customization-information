@@ -43,18 +43,22 @@ func (gci *GoodsCustomizedInformation) Reset() *GoodsCustomizedInformation {
 
 // Build 构建定制信息
 func (gci *GoodsCustomizedInformation) Build(materials ...Material) error {
+	if len(materials) == 0 {
+		return fmt.Errorf("materials is empty")
+	}
+
 	gci.Reset()
 	rawData := make([]map[string]any, len(materials))
 	for i, material := range materials {
 		if err := material.validate(); err != nil {
 			return err
 		}
+
 		rawData[i] = map[string]any{
 			"preview_image": material.PreviewImage,
 			"texts":         material.Texts,
 			"images":        material.Images,
 		}
-
 		region := NewRegion()
 		for _, lineStr := range material.Texts {
 			lineStr = strings.TrimSpace(lineStr)
