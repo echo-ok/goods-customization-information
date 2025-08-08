@@ -1,7 +1,6 @@
 package gci
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -43,52 +42,52 @@ func (gci *GoodsCustomizedInformation) Reset() *GoodsCustomizedInformation {
 }
 
 // Build 构建定制信息
-func (gci *GoodsCustomizedInformation) Build(previewImage string, texts []string, images []string) error {
-	if len(texts) == 0 && len(images) == 0 {
-		return errors.New("gci: Either texts or images must be filled in, but not both can be empty")
-	}
+func (gci *GoodsCustomizedInformation) Build(materials ...Material) error {
 	gci.Reset()
-	tb, _ := json.Marshal(texts)
-	ib, _ := json.Marshal(images)
-	gci.RawData = null.NewString(fmt.Sprintf(`{"preview_image": "%s", texts": "%s", "images": "%s"}`, previewImage, string(tb), string(ib)), true)
-	region := NewRegion()
-	for _, lineStr := range texts {
-		lineStr = strings.TrimSpace(lineStr)
-		label, value, ok := strings.Cut(lineStr, ":")
-		if !ok {
-			return fmt.Errorf("gci: invalid text: %s", lineStr)
-		}
-
-		label = strings.TrimSpace(label)
-		value = strings.TrimSpace(value)
-		if label == "" {
-			return errors.New("gci: invalid label")
-		}
-
-		text, err := NewText(label, value)
+	rawData := make([]map[string]any, len(materials))
+	for i, material := range materials {
+		err := material.validate()
 		if err != nil {
 			return err
 		}
+		rawData[i] = map[string]any{
+			"preview_image": material.PreviewImage,
+			"texts":         material.Texts,
+			"images":        material.Images,
+		}
 
-		region.AddText(text)
-	}
-	for _, img := range images {
-		image, err := NewImage(img, false)
-		if err != nil {
-			return err
+		region := NewRegion()
+		for _, lineStr := range material.Texts {
+			lineStr = strings.TrimSpace(lineStr)
+			label, value, _ := strings.Cut(lineStr, ":")
+
+			text, err := NewText(strings.TrimSpace(label), strings.TrimSpace(value))
+			if err != nil {
+				return err
+			}
+
+			region.AddText(text)
 		}
-		region.AddImage(image)
-	}
-	surface := NewSurface()
-	if previewImage != "" {
-		image, err := NewImage(previewImage, false)
-		if err != nil {
-			return err
+		for _, img := range material.Images {
+			image, err := NewImage(img, false)
+			if err != nil {
+				return err
+			}
+			region.AddImage(image)
 		}
-		surface.SetPreviewImage(image)
+		surface := NewSurface()
+		if material.PreviewImage != "" {
+			image, err := NewImage(material.PreviewImage, false)
+			if err != nil {
+				return err
+			}
+			surface.SetPreviewImage(image)
+		}
+		surface.AddRegion(region)
+		gci.AddSurface(surface)
 	}
-	surface.AddRegion(region)
-	gci.AddSurface(surface)
+	gci.SetRawData(rawData)
+
 	return nil
 }
 

@@ -225,7 +225,12 @@ func TestGoodsCustomizedInformation_From(t *testing.T) {
 				RawData:  tt.fields.RawData,
 				Surfaces: tt.fields.Surfaces,
 			}
-			err := gci.Build(tt.args.previewImage, tt.args.texts, tt.args.images)
+			err := gci.Build(Material{
+				Name:         "",
+				PreviewImage: tt.args.previewImage,
+				Texts:        tt.args.texts,
+				Images:       tt.args.images,
+			})
 			tt.wantErr(t, err, fmt.Sprintf("Build(%v, %v, %v)", tt.args.previewImage, tt.args.texts, tt.args.images), gci)
 		})
 	}
