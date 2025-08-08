@@ -8,10 +8,10 @@ import (
 
 // Material 手工构造物料
 type Material struct {
-	Name         string
-	PreviewImage string
-	Texts        []string
-	Images       []string
+	Name         string   // Surface name
+	PreviewImage string   // Preview image
+	Texts        []string // Customization texts
+	Images       []string // Customization images
 }
 
 func (m Material) validate() error {

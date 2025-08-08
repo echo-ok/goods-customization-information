@@ -46,8 +46,7 @@ func (gci *GoodsCustomizedInformation) Build(materials ...Material) error {
 	gci.Reset()
 	rawData := make([]map[string]any, len(materials))
 	for i, material := range materials {
-		err := material.validate()
-		if err != nil {
+		if err := material.validate(); err != nil {
 			return err
 		}
 		rawData[i] = map[string]any{
@@ -60,12 +59,10 @@ func (gci *GoodsCustomizedInformation) Build(materials ...Material) error {
 		for _, lineStr := range material.Texts {
 			lineStr = strings.TrimSpace(lineStr)
 			label, value, _ := strings.Cut(lineStr, ":")
-
 			text, err := NewText(strings.TrimSpace(label), strings.TrimSpace(value))
 			if err != nil {
 				return err
 			}
-
 			region.AddText(text)
 		}
 		for _, img := range material.Images {
@@ -75,7 +72,7 @@ func (gci *GoodsCustomizedInformation) Build(materials ...Material) error {
 			}
 			region.AddImage(image)
 		}
-		surface := NewSurface()
+		surface := NewSurface(material.Name)
 		if material.PreviewImage != "" {
 			image, err := NewImage(material.PreviewImage, false)
 			if err != nil {

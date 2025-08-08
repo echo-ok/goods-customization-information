@@ -218,6 +218,33 @@ func TestGoodsCustomizedInformation_From(t *testing.T) {
 				return true
 			},
 		},
+		{
+			"t7 有文本，有图片",
+			fields{
+				RawData: null.StringFrom(`[{"preview_image":"","texts":["a":"A", "b": "B"],"images":["https://www.a.com/b.jpg"]}]`),
+			},
+			args{
+				"",
+				[]string{"a:A", "b:B"},
+				[]string{"https://www.a.com/b.jpg"},
+			},
+			func(t assert.TestingT, err error, i ...interface{}) bool {
+				assert.Equal(t, nil, err)
+				g, _ := i[1].(*GoodsCustomizedInformation)
+				assert.Equal(t, 1, len(g.Surfaces))
+				assert.Equal(t, `[{"images":["https://www.a.com/b.jpg"],"preview_image":"","texts":["a:A","b:B"]}]`, g.RawData.ValueOrZero())
+				texts := g.Surfaces[0].Regions[0].Texts
+				assert.Equal(t, 2, len(texts))
+				assert.Equal(t, "a", texts[0].Label)
+				assert.Equal(t, "A", texts[0].Value)
+				images := g.Surfaces[0].Regions[0].Images
+				assert.Equal(t, 1, len(images))
+				exceptedImage, _ := NewImage("https://www.a.com/b.jpg", false)
+				assert.Equal(t, exceptedImage, images[0])
+				assert.Equal(t, "https://www.a.com/b.jpg", exceptedImage.Url.ValueOrZero())
+				return true
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
