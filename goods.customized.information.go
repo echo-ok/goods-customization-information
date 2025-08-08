@@ -62,12 +62,13 @@ func (gci *GoodsCustomizedInformation) Build(materials ...Material) error {
 		region := NewRegion()
 		for _, lineStr := range material.Texts {
 			lineStr = strings.TrimSpace(lineStr)
-			label, value, _ := strings.Cut(lineStr, ":")
-			text, err := NewText(strings.TrimSpace(label), strings.TrimSpace(value))
-			if err != nil {
-				return err
+			if label, value, ok := strings.Cut(lineStr, ":"); ok {
+				text, err := NewText(label, value)
+				if err != nil {
+					return err
+				}
+				region.AddText(text)
 			}
-			region.AddText(text)
 		}
 		for _, img := range material.Images {
 			image, err := NewImage(img, false)

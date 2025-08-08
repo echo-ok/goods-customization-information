@@ -27,20 +27,16 @@ func (m Material) validate() error {
 			return errors.New("gci: text cannot be empty")
 		}
 
-		label, value, ok := strings.Cut(lineStr, ":")
+		label, _, ok := strings.Cut(lineStr, ":")
 		if !ok {
 			return fmt.Errorf("gci: invalid text: %s", lineStr)
 		}
-
-		label = strings.TrimSpace(label)
-		value = strings.TrimSpace(value)
-		if label == "" {
+		if strings.TrimSpace(label) == "" {
 			return errors.New("gci: invalid label")
 		}
 	}
 	for _, image := range images {
-		image = strings.TrimSpace(image)
-		if image == "" {
+		if strings.TrimSpace(image) == "" {
 			return errors.New("gci: invalid image")
 		}
 	}
