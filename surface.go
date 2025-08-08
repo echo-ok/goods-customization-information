@@ -27,8 +27,8 @@ func NewSurface(name ...string) Surface {
 	return sf
 }
 
-func (sf *Surface) SetPreviewImage(image *Image) *Surface {
-	sf.PreviewImage = image
+func (sf *Surface) SetPreviewImage(image Image) *Surface {
+	sf.PreviewImage = &image
 	return sf
 }
 func (sf *Surface) AddRegion(region Region) *Surface {
